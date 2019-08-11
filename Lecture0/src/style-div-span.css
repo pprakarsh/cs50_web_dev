@@ -1,0 +1,20 @@
+#top
+{
+	color: red;
+}
+
+#bottom
+{
+	color: blue;
+}
+
+#middle
+{
+	color: black;
+}
+
+.bold
+{
+	font-weight: bold;
+	color: yellow;
+}
