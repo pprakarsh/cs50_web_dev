@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, request, render_template
+from flask import Flask, session, request, render_template, redirect
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -47,6 +47,7 @@ def index():
             db.execute("INSERT INTO users(username, email, password) VALUES (:username, :email, :password)", {"username": username, "email": email_id, "password": create_password})
             db.commit()
             return render_template("index.html")
+
     if request.method == "GET":
         return render_template("index.html")
     
@@ -55,9 +56,16 @@ def home():
     username = request.form.get("username")
     password = request.form.get("password")
     
-    credentials = db.execute("SELECT username, password FROM users WHERE username= :username and password= :password", {"username": username, "password": password }).rowcount==0
+    credentials = db.execute("SELECT username, password FROM users WHERE username= :username and password= :password", {"username": username, "password": password }).rowcount!=0
 
-    if credentials==True:
+    if credentials==False:
         return render_template("error.html", error="Invalid credentials. Please login again")
     else:
+        session[username]="home"
         return render_template("home.html", username=username)
+
+@app.route("/logout", methods = ["POST"])
+def logout():
+    username=request.form.get("username")
+    del session[username]
+    return redirect('/')
