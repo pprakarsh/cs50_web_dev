@@ -30,14 +30,12 @@ def index():
         confirm_password = request.form.get("confirm_password")
         email_id = request.form.get("emailid") 
         
-        usernames = db.execute("SELECT username FROM users").fetchall()
-        temp_username = "('"+ username +"',)"
-        if username == None or create_password == None or confirm_password == None or email_id == None: #for checking if any data unfilled
+        usernames = db.execute("SELECT username FROM users WHERE username= :username", {"username": username}).fetchone()
+        if username == "" or create_password == "" or confirm_password == "" or email_id == "": #for checking if any data unfilled
             return render_template("error.html", error="Incomplete form! Please fill all the details.")
 
-        elif temp_username in usernames:  #for checking is username already exists in database
-            return render_template("temp_error.html", error=usernames) 
-            return render_template("error.html", error="Username already taken please enter a different username")
+        elif usernames != None:   #for checking is username already exists in database
+            return render_template("error.html", error="Username already taken. Please fill the form again")
         
         elif create_password != confirm_password:     #for checking if create_password and confirm password match
             return render_template("error.html", error="Passwords do not match! Please fill the form with matching passwords")
@@ -46,13 +44,20 @@ def index():
             return render_template("error.html", error="Apostrophe and quotes not allowed in password")
             
         else:
-#            db.execute("INSERT INTO users(username, email, password) VALUES (:username, :password, :email)", {"username": username, "password": create_password, "email": email_id})
-#            db.commit()
-#            return render_template("index.html")
-            return render_template("temp_error.html", error=usernames) 
+            db.execute("INSERT INTO users(username, email, password) VALUES (:username, :email, :password)", {"username": username, "email": email_id, "password": create_password})
+            db.commit()
+            return render_template("index.html")
     if request.method == "GET":
         return render_template("index.html")
     
 @app.route("/home", methods =  ["POST"])
 def home():
-    return "Hello, welcome to home"
+    username = request.form.get("username")
+    password = request.form.get("password")
+    
+    credentials = db.execute("SELECT username, password FROM users WHERE username= :username and password= :password", {"username": username, "password": password }).rowcount==0
+
+    if credentials==True:
+        return render_template("error.html", error="Invalid credentials. Please login again")
+    else:
+        return render_template("home.html", username=username)
