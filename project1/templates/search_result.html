@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block heading %}
+<h1> Please choose from the following books: </h1>
+{% endblock %}
+
+{% block body %}
+<table align="center">
+	<tr>
+		<th>ISBN</th>
+		<th>TITLE</th>
+		<th>AUTHOR</th>
+		<th>YEAR</th>
+		<th>REVIEW_COUNT</th>
+		<th>AVG_SCORE</th>
+	</tr>
+{% for books in books %}
+	<tr>
+		<td>{{ books.isbn}}</td>
+		<td>{{ books.title }}</td>
+		<td>{{ books.author }}</td>
+		<td>{{ books.year }}</td>
+		<td>{{ books.review_count }}</td>
+		<td>{{ books.avg_score }}</td>
+	</tr>
+{% endfor %}
+</table>
+	<a href="{{ url_for('home') }}"><span>Go back to search again!</span></a>
+{% endblock %}

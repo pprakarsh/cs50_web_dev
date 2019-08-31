@@ -8,6 +8,6 @@
 {% block body %}
 <div class = "error-msg">
 	<h3>{{ error }}</h3>
-	<a href="{{ url_for('index') }}"><span>Go back to signup again!</span></a>
+	<a href="{{ url_for(back) }}"><span>Go back to {{ text_back }}again!</span></a>
 </div>
 {% endblock %}

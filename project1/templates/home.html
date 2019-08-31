@@ -5,8 +5,19 @@
 {% endblock %}
 
 {% block body %}
-<form action="{{ url_for('logout') }}" method="POST">
-	<input type="hidden" name="username" value= "{{ username }}" />	
-	<button id="logout_button">Logout</button>
-</form>
+<div class = "form" id = "logout_form"> 
+	<form action="{{ url_for('logout') }}" method="POST">
+		<input type="hidden" name="username" value= "{{ username }}" />	
+		<button id="logout_button">Logout</button>
+	</form>
+</div>
+
+<div class = "form" id = "search_form">
+	<form action="{{ url_for('search_result') }}" method="POST" name="search_form"> 
+		<input type="text" name="isbn" placeholder="ISBN"> 
+		<input type="text" name="book_name" placeholder="Name of book">
+		<input type="text" name="author" placeholder="Name of author">
+		<button>Search</button>	
+	</form>
+</div>
 {% endblock %}

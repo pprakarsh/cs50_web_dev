@@ -32,16 +32,16 @@ def index():
         
         usernames = db.execute("SELECT username FROM users WHERE username= :username", {"username": username}).fetchone()
         if username == "" or create_password == "" or confirm_password == "" or email_id == "": #for checking if any data unfilled
-            return render_template("error.html", error="Incomplete form! Please fill all the details.")
+            return render_template("error.html", error="Incomplete form! Please fill all the details.", back="index", text_back="sign_up")
 
         elif usernames != None:   #for checking is username already exists in database
-            return render_template("error.html", error="Username already taken. Please fill the form again")
+            return render_template("error.html", error="Username already taken. Please fill the form again", back="index", text_back="sign_up")
         
         elif create_password != confirm_password:     #for checking if create_password and confirm password match
-            return render_template("error.html", error="Passwords do not match! Please fill the form with matching passwords")
+            return render_template("error.html", error="Passwords do not match! Please fill the form with matching passwords", back="index", text_back="sign_up")
 
         elif '\'' in create_password or '\"' in create_password:    #for sql_injection protection
-            return render_template("error.html", error="Apostrophe and quotes not allowed in password")
+            return render_template("error.html", error="Apostrophe and quotes not allowed in password", back="index", text_back="sign_up")
             
         else:
             db.execute("INSERT INTO users(username, email, password) VALUES (:username, :email, :password)", {"username": username, "email": email_id, "password": create_password})
@@ -51,21 +51,59 @@ def index():
     if request.method == "GET":
         return render_template("index.html")
     
-@app.route("/home", methods =  ["POST"])
+@app.route("/home", methods =  ["POST", "GET"])
 def home():
+    if request.method == "GET":
+        if "logged_in" in session and session["logged_in"]==True:
+            return render_template("home.html", username=session["username"])
+        else:
+            return render_template("error.html", error="Please login to access this page", back="index", text_back="login")
+
+    if "logged_in" in session and session["logged_in"]==True:
+        return render_template("home.html", username=session["username"])
+
     username = request.form.get("username")
     password = request.form.get("password")
-    
+     
     credentials = db.execute("SELECT username, password FROM users WHERE username= :username and password= :password", {"username": username, "password": password }).rowcount!=0
+    db.commit()
 
     if credentials==False:
-        return render_template("error.html", error="Invalid credentials. Please login again")
+        return render_template("error.html", error="Invalid credentials. Please login again", back="index", text_back="login")
     else:
-        session[username]="home"
+        session["logged_in"]=True
+        session["username"] = username;
+        session["password"] = password;
         return render_template("home.html", username=username)
+
+@app.route("/home/search_result", methods = ["POST"])
+def search_result():
+    if session["logged_in"]==False:
+        return render_template("error.html", error="Please login to acces this page", back="index", text_back="login")
+
+    isbn = request.form.get("isbn")
+    book_name = request.form.get("book_name")
+    author = request.form.get("author")
+
+    isbn_temp = "%"+isbn+"%"
+    book_name_temp = "%"+book_name+"%"
+    author_temp = "%"+author+"%"
+
+    if isbn == "" and book_name == "" and author == "":
+        return render_template("error.html", error="Please enter information about the book", back="home", text_back="home")
+
+    books = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn_temp and title LIKE :book_name_temp and author LIKE :author_temp", {"isbn_temp": isbn_temp, "book_name_temp": book_name_temp, "author_temp": author_temp}).fetchall()
+    db.commit()
+
+    if len(books) == 0:
+        return render_template("error.html", error="No results found", back="home", text_back="Go back to search again")
+    else:
+        return render_template("search_result.html", books=books) 
 
 @app.route("/logout", methods = ["POST"])
 def logout():
     username=request.form.get("username")
-    del session[username]
+    session["logged_in"]=False
+    del session["username"]
+    del session["password"]
     return redirect('/')
