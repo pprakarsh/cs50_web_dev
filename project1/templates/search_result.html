@@ -1,5 +1,40 @@
 {% extends "layout.html" %}
 
+{% block header %}
+	<meta charset="UTF-8">
+	<title>Book list</title>
+	<link rel="stylesheet" href="table_style.css" type="text/css"/>
+	<style>
+		h1
+		{
+			text-align: center;
+			color: dark-magenta;
+		}
+
+		table
+		{
+			border: 3px solid black;
+			border-collapse: collapse;
+			width: 50%;
+		}
+
+		th
+		{
+			padding: 5px;
+			border: 2px solid black;
+			text-align: center;
+			background-color: grey;
+		}
+
+		td
+		{
+			padding: 5px;
+			border: 1px solid black;
+			text-align: center;
+		}	
+	</style>
+{% endblock %}
+
 {% block heading %}
 <h1> Please choose from the following books: </h1>
 {% endblock %}
@@ -14,14 +49,15 @@
 		<th>REVIEW_COUNT</th>
 		<th>AVG_SCORE</th>
 	</tr>
-{% for books in books %}
+{% for book in books %}
 	<tr>
-		<td>{{ books.isbn}}</td>
-		<td>{{ books.title }}</td>
-		<td>{{ books.author }}</td>
-		<td>{{ books.year }}</td>
-		<td>{{ books.review_count }}</td>
-		<td>{{ books.avg_score }}</td>
+		<td>{{ book.isbn}}</td>
+		<td>{{ book.title }}</td>
+		<td>{{ book.author }}</td>
+		<td>{{ book.year }}</td>
+	 	<td>{{ review_count[loop.index0]}}</td>
+		<td>{{ avg_score[loop.index0] }}</td>
+		<td><a href = ""> see details </a></td>
 	</tr>
 {% endfor %}
 </table>

@@ -1,5 +1,5 @@
 import os
-
+import requests
 from flask import Flask, session, request, render_template, redirect
 from flask_session import Session
 from sqlalchemy import create_engine
@@ -97,8 +97,19 @@ def search_result():
 
     if len(books) == 0:
         return render_template("error.html", error="No results found", back="home", text_back="Go back to search again")
-    else:
-        return render_template("search_result.html", books=books) 
+
+    avg_score = []
+    review_count = [] 
+    for book in books:
+        res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "iXeIA5jqccT2eTgE4BRA", "isbns": book.isbn})
+        if res.status_code == 404:
+            avg_score.append("Not found")
+            review_count.append("Not found")
+        else:
+            avg_score.append(res.json()['books'][0]['average_rating'])
+            review_count.append(res.json()['books'][0]['reviews_count']) 
+         
+    return render_template("search_result.html", books=books, avg_score=avg_score, review_count=review_count) 
 
 @app.route("/logout", methods = ["POST"])
 def logout():
