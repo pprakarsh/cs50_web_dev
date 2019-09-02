@@ -23,6 +23,9 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
+    if "logged_in" in session and session["logged_in"]==True:
+        return redirect("/home")
+
     if request.method == "POST":
         
         username = request.form.get("username")
@@ -82,8 +85,8 @@ def search_result():
         return render_template("error.html", error="Please login to acces this page", back="index", text_back="login")
 
     isbn = request.form.get("isbn")
-    book_name = request.form.get("book_name")
-    author = request.form.get("author")
+    book_name = request.form.get("book_name").lower()
+    author = request.form.get("author").lower()
 
     isbn_temp = "%"+isbn+"%"
     book_name_temp = "%"+book_name+"%"
@@ -92,7 +95,7 @@ def search_result():
     if isbn == "" and book_name == "" and author == "":
         return render_template("error.html", error="Please enter information about the book", back="home", text_back="home")
 
-    books = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn_temp and title LIKE :book_name_temp and author LIKE :author_temp", {"isbn_temp": isbn_temp, "book_name_temp": book_name_temp, "author_temp": author_temp}).fetchall()
+    books = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn_temp and lower(title) LIKE :book_name_temp and lower(author) LIKE :author_temp", {"isbn_temp": isbn_temp, "book_name_temp": book_name_temp, "author_temp": author_temp}).fetchall()
     db.commit()
 
     if len(books) == 0:
@@ -110,6 +113,13 @@ def search_result():
             review_count.append(res.json()['books'][0]['reviews_count']) 
          
     return render_template("search_result.html", books=books, avg_score=avg_score, review_count=review_count) 
+
+@app.route("/home/book_info/<string:isbn>")
+def book_info():
+    if session["logged_in"]==False:
+        return render_template("error.html", error="Please login to access this page", back="index", text_back="login")
+    res = requests.get("https://www.goodreads.com/review/show_by_user_and_book.xml?book_id=50&key=iXeIA5jqccT2eTgE4BRA&user_id=1", params={}) 
+
 
 @app.route("/logout", methods = ["POST"])
 def logout():

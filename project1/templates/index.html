@@ -8,8 +8,8 @@
 <div class="form" id="loginform">
 	<h1>LOGIN</h1>
 	<form action="{{url_for('home') }}" method="post" name="loginform">
-		<input type="text" name="username" placeholder="Enter username">
-		<input type="password" name="password" placeholder="Enter password">
+		<input required type="text" name="username" placeholder="Enter username">
+		<input required type="password" name="password" placeholder="Enter password">
 		<button>Login</button>
 	</form>
 </div>
@@ -17,10 +17,10 @@
 <div class="form" id="signupform">
 	<h1>SIGNUP</h1>
 	<form action="{{url_for('index')}}" method="post" name="signupform">
-		<input type="text" name="username" placeholder="Enterusername">
-		<input type="email" name="emailid" placeholder="Enter Email-id">
-		<input type="password" name="create_password" placeholder="Create Password">
-		<input type="password" name="confirm_password" placeholder="Confirm Password">
+		<input required type="text" name="username" placeholder="Enterusername">
+		<input required type="email" name="emailid" placeholder="Enter Email-id">
+		<input required type="password" name="create_password" placeholder="Create Password">
+		<input required type="password" name="confirm_password" placeholder="Confirm Password">
 		<button>Signup</button>
 	</form>
 </div>

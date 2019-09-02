@@ -57,7 +57,7 @@
 		<td>{{ book.year }}</td>
 	 	<td>{{ review_count[loop.index0]}}</td>
 		<td>{{ avg_score[loop.index0] }}</td>
-		<td><a href = ""> see details </a></td>
+		<td><a href = {{ url_for('book_info', isbn=book.isbn) }}> see book_info</a></td>
 	</tr>
 {% endfor %}
 </table>
