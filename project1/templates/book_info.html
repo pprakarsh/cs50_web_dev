@@ -3,11 +3,56 @@
 {% block heading %}<h1>Information for your book:</h1>{% endblock %}
 
 {% block body %}
+<h4>Book_Name: {{ title }}</h4>
+<h4>Author: {{ author }}</h4>
+<h4>Year of publication: {{ year }}</h4>
+<div id = "GoodReads" align="center">
+<h3>GoodReads: </h3>
+<h4>Avg_rating: {{ avg_score }}</h4>
+<h4>Review_count: {{ review_count }}</h4>
+</div>
 
-<div class = "form" id = "logout_form"> 
+<div class = "form" id = "Review form" action=>
+<h3>Write your Review here:</h3>
+<form action={{ url_for('review_submit', isbn=isbn, title=title, author=author, year=year) }} method="POST">
+	<select required name="book_rating">
+		<option selected disabled>Please rate this book out of 5:</option>
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+	</select>
+	<textarea required name="short-review" rows="10" cols="50" placeholder="Please write your review of the book here......">
+	</textarea>
+	<button>Submit your review</button>
+</form>
+</div>
+<div class = "form" id = "logout_form" align="right"> 
 	<form action="{{ url_for('logout') }}" method="POST">
 		<input type="hidden" name="username" value= "{{ username }}" />	
 		<button id="logout_button">Logout</button>
 	</form>
 </div>
-{% blockend %}
+
+<div class="Reviews" align = "center">
+	{% for review in reviews %}		
+	<h4>Book Review by members: </h4>
+	<div class = "review_user">
+		<p><b>user</b>: {{ review.username }}</p>
+		<p><b>rating</b>: {{ review.rating }}</p>
+		<p><b>review</b>: {{ review.book_review }}</p>
+	</div>
+	{% endfor %}
+
+</div>
+
+<div id="msg_reviewd" align="left">
+	{% if post == "1" %} 
+		Multiple reviews not allowed	
+	{% endif %}
+</div>
+
+<a href={{ url_for('home') }}>Go back to search for another book</a>
+{% endblock %}
+

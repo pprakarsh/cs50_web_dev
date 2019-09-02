@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import Flask, session, request, render_template, redirect
+from flask import Flask, session, request, render_template, redirect, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -111,18 +111,54 @@ def search_result():
          
     return render_template("search_result.html", books=books, avg_score=avg_score, review_count=review_count) 
 
-@app.route("/home/book_info/<string:isbn>")
-def book_info():
+@app.route("/home/book_info/<string:isbn>/<string:title>/<string:author>/<string:year>/<int:post>")
+def book_info(isbn, title, author, year, post):
     if "logged_in" not in session or session["logged_in"]==False:
         return render_template("error.html", error="Please login to access this page", back="index", text_back="login")
+    
+    avg_score = "" 
+    review_count = "" 
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "iXeIA5jqccT2eTgE4BRA", "isbns": isbn})
+    if res.status_code == 404:
+        avg_score = "Not found"
+        review_count = "Not found"
+    else:
+        avg_score = (res.json()['books'][0]['average_rating'])
+        review_count = (res.json()['books'][0]['reviews_count']) 
 
-    res_bookid = requests.get("https://www.goodreads.com/book/isbn_to_id/0441172717,0739467352?key=iXeIA5jqccT2eTgE4BRA", params={"key": "iXeIA5jqccT2eTgE4BRA", "isbn":book.isbn}) 
+    reviews = db.execute("SELECT * FROM review WHERE isbn= :isbn", {"isbn": isbn}).fetchall()
+    db.commit()
+
+    if post == 1:
+        return render_template("book_info.html", isbn=isbn, title=title, author=author, year=year, avg_score=avg_score, review_count=review_count, reviews=reviews, post="1")
+    else:
+        return render_template("book_info.html", isbn=isbn, title=title, author=author, year=year, avg_score=avg_score, review_count=review_count, reviews=reviews, post="0")
 
 
 @app.route("/logout", methods = ["POST"])
 def logout():
+    if "logged_in" not in session or session["logged_in"]==False:
+        return render_template("error.html", error="Please login to acces this page", back="index", text_back="login")
     username=request.form.get("username")
     session["logged_in"]=False
     del session["username"]
     del session["password"]
     return redirect('/')
+
+
+@app.route("/review_submit/<string:isbn>/<string:title>/<string:author>/<string:year>", methods = ["POST"])
+def review_submit(isbn, title, author, year):
+    if "logged_in" not in session or session["logged_in"]==False:
+        return render_template("error.html", error="Please login to acces this page", back="index", text_back="login")
+
+    rating=request.form.get("book_rating")
+    book_review=request.form.get("short-review")
+    
+    reviewed = db.execute("SELECT * FROM review WHERE isbn= :isbn and username= :username", {"isbn": isbn, "username": session["username"]}).rowcount==1
+    if(not reviewed):
+        db.execute("INSERT INTO review(username, isbn, book_review, rating) VALUES (:username, :isbn, :book_review, :rating)", {"username": session["username"], "isbn": isbn, "book_review": book_review, "rating": rating})
+        db.commit()
+        return redirect(url_for("book_info", isbn=isbn, title=title, author=author, year=year, post=0))
+    else:
+        return redirect(url_for("book_info", isbn=isbn, title=title, author=author, year=year, post=1))
+        
