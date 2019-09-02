@@ -62,9 +62,6 @@ def home():
         else:
             return render_template("error.html", error="Please login to access this page", back="index", text_back="login")
 
-    if "logged_in" in session and session["logged_in"]==True:
-        return render_template("home.html", username=session["username"])
-
     username = request.form.get("username")
     password = request.form.get("password")
      
@@ -81,7 +78,7 @@ def home():
 
 @app.route("/home/search_result", methods = ["POST"])
 def search_result():
-    if session["logged_in"]==False:
+    if "logged_in" not in session or session["logged_in"]==False:
         return render_template("error.html", error="Please login to acces this page", back="index", text_back="login")
 
     isbn = request.form.get("isbn")
@@ -116,9 +113,10 @@ def search_result():
 
 @app.route("/home/book_info/<string:isbn>")
 def book_info():
-    if session["logged_in"]==False:
+    if "logged_in" not in session or session["logged_in"]==False:
         return render_template("error.html", error="Please login to access this page", back="index", text_back="login")
-    res = requests.get("https://www.goodreads.com/review/show_by_user_and_book.xml?book_id=50&key=iXeIA5jqccT2eTgE4BRA&user_id=1", params={}) 
+
+    res_bookid = requests.get("https://www.goodreads.com/book/isbn_to_id/0441172717,0739467352?key=iXeIA5jqccT2eTgE4BRA", params={"key": "iXeIA5jqccT2eTgE4BRA", "isbn":book.isbn}) 
 
 
 @app.route("/logout", methods = ["POST"])

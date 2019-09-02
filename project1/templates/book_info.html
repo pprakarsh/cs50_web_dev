@@ -4,3 +4,10 @@
 
 {% block body %}
 
+<div class = "form" id = "logout_form"> 
+	<form action="{{ url_for('logout') }}" method="POST">
+		<input type="hidden" name="username" value= "{{ username }}" />	
+		<button id="logout_button">Logout</button>
+	</form>
+</div>
+{% blockend %}

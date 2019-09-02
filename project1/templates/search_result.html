@@ -62,4 +62,11 @@
 {% endfor %}
 </table>
 	<a href="{{ url_for('home') }}"><span>Go back to search again!</span></a>
+
+<div class = "form" id = "logout_form"> 
+	<form action="{{ url_for('logout') }}" method="POST">
+		<input type="hidden" name="username" value= "{{ username }}" />	
+		<button id="logout_button">Logout</button>
+	</form>
+</div>
 {% endblock %}
