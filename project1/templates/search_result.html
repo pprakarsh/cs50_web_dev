@@ -3,16 +3,33 @@
 {% block header %}
 	<meta charset="UTF-8">
 	<title>Book list</title>
-	<link rel="stylesheet" href="table_style.css" type="text/css"/>
 	<style>
-		h1
+		body
 		{
-			text-align: center;
-			color: dark-magenta;
+			display: grid;
+			grid-template-rows:2fr 9fr 1fr;
+			grid-template-columns:2fr 8fr 1fr;
+		}
+		h1	
+		{
+			grid-column-start: 1;
+			grid-column-end: 4;
+			grid-row: 1/2;
+			text-color: dark-magenta;
+			margin-top: 25px;
+			margin-left: auto;
+			margin-right: auto;	
+			margin-bottom: 25px;
+		}
+		table
+		{
+			grid-row:2/3;
+			grid-column:2/3;
 		}
 		#logout_form
 		{
-			grid-row: 4/5;
+			grid-row:3/4; 
+			grid-column:3/4;
 			margin-right: 45px;
 		}
 		#logout_button
@@ -27,11 +44,17 @@
 			bacground-color: white;
 			border-radius: 2px;
 		}
+		#go_home
+		{
+			grid-row:3/4;
+			grid-column:1/2;	
+			margin-left: 55px;
+		}
 	</style>
 {% endblock %}
 
 {% block heading %}
-<h1> Please choose from the following books: </h1>
+<h1 align="center"> Please choose from the following books: </h1>
 {% endblock %}
 
 {% block body %}
@@ -56,9 +79,11 @@
 	</tr>
 {% endfor %}
 </table>
+<div id="go_home">
 	<a href="{{ url_for('home') }}"><span>Go back to search again!</span></a>
+</div>
 
-<div class = "form" id = "logout_form"> 
+<div class = "form" id = "logout_form" align="right"> 
 	<form action="{{ url_for('logout') }}" method="POST">
 		<input type="hidden" name="username" value= "{{ username }}" />	
 		<button id="logout_button">Logout</button>
