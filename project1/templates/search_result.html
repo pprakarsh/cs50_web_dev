@@ -10,28 +10,23 @@
 			text-align: center;
 			color: dark-magenta;
 		}
-
-		table
+		#logout_form
 		{
-			border: 3px solid black;
-			border-collapse: collapse;
-			width: 50%;
+			grid-row: 4/5;
+			margin-right: 45px;
 		}
-
-		th
+		#logout_button
 		{
-			padding: 5px;
-			border: 2px solid black;
-			text-align: center;
-			background-color: grey;
+			-webkit-transition-duration: 0.4s; /* Safari */
+			transition-duration: 0.4s;
+			background-color: #D3D3D3;
+			border-radius: 12px;
 		}
-
-		td
+		#logout_button:hover
 		{
-			padding: 5px;
-			border: 1px solid black;
-			text-align: center;
-		}	
+			bacground-color: white;
+			border-radius: 2px;
+		}
 	</style>
 {% endblock %}
 
@@ -40,7 +35,7 @@
 {% endblock %}
 
 {% block body %}
-<table align="center">
+<table align="center" class="table table-striped table-bordered table-hover">
 	<tr>
 		<th>ISBN</th>
 		<th>TITLE</th>
