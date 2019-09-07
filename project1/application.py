@@ -62,19 +62,23 @@ def home():
         else:
             return render_template("error.html", error="Please login to access this page", back="index", text_back="login")
 
-    username = request.form.get("username")
-    password = request.form.get("password")
-     
-    credentials = db.execute("SELECT username, password FROM users WHERE username= :username and password= :password", {"username": username, "password": password }).rowcount!=0
-    db.commit()
+    if request.method == "POST":
+        if "logged_in" in session and session["logged_in"]==True:
+            return render_template("home.html", username=session["username"])
 
-    if credentials==False:
-        return render_template("error.html", error="Invalid credentials. Please login again", back="index", text_back="login")
-    else:
-        session["logged_in"]=True
-        session["username"] = username;
-        session["password"] = password;
-        return render_template("home.html", username=username)
+        username = request.form.get("username")
+        password = request.form.get("password")
+         
+        credentials = db.execute("SELECT username, password FROM users WHERE username= :username and password= :password", {"username": username, "password": password }).rowcount!=0
+        db.commit()
+
+        if credentials==False:
+            return render_template("error.html", error="Invalid credentials. Please login again", back="index", text_back="login")
+        else:
+            session["logged_in"]=True
+            session["username"] = username;
+            session["password"] = password;
+            return render_template("home.html", username=username)
 
 @app.route("/home/search_result", methods = ["POST"])
 def search_result():
