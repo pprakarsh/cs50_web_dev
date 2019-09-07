@@ -49,7 +49,7 @@ def index():
         else:
             db.execute("INSERT INTO users(username, email, password) VALUES (:username, :email, :password)", {"username": username, "email": email_id, "password": create_password})
             db.commit()
-            return render_template("index.html")
+            return render_template("index.html", msg="Sign-up Successful")
 
     if request.method == "GET":
         return render_template("index.html")
