@@ -53,29 +53,28 @@
 	{
 		padding:20px;
 		grid-row:3/4;
-		grid-column:1/5;
+		grid-column:1/4;
 		background-color:#131E53;
 		color: white;
 	}
 	#side-bar
-	{
-		margin-top:299px;
+	{	
+		padding-top: 300px;
+		background-color:#131E53;
 		grid-row:3/4;
 		grid-column:4/5;
-		grid-template-rows:1fr 1fr;
-		grid-template-columns: 1fr;
 	}
 	select
 	{
-		width:500px;
+		width: 70%;
 	}
 	textarea
 	{
-		width:700px;
+		width:100%;
 	}
 	#msg_reviewed
 	{
-		width:150px;
+		width:50%;
 	}
 </style>
 {% endblock %}
@@ -148,18 +147,17 @@
 <div id="side-bar">
 	<div class = "form" id = "logout_form"> 
 		<form action="{{ url_for('logout') }}" method="POST">
-			<input type="hidden" name="username" value= "{{ username }}" />	
+			<input type="hidden" name="logout" value= "{{ username }}" />	
 			<button id="logout_button" class="btn btn-primary">Logout</button>
 		</form>
 	</div>
 	<p>
 	<div class = "form" id = "goback_form"> 
 		<form action="{{ url_for('home') }}" method="POST">
-			<input type="hidden" name="username" value= "{{ username }}" />	
+			<input type="hidden" name="goback" value= "{{ username }}" />	
 			<button id="goback_button" class="btn btn-primary">Search again</button>
 		</form>
 	</div>
 </div>
 
 {% endblock %}
-
